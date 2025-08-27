@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skandh Agarwal - AI/ML Developer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at center, #0f0f23 0%, #050505 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-content {
+            z-index: 10;
+            animation: fadeInUp 2s ease-out;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff, #00ff88);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            animation: typewriter 4s steps(50, end) 1s both;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            animation: float 4s ease-in-out infinite;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card-about { top: 20%; left: 10%; animation-delay: 0s; }
+        .card-skills { top: 60%; right: 10%; animation-delay: 2s; }
+        .card-projects { bottom: 20%; left: 15%; animation-delay: 4s; }
+
+        .section {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .skill-card {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 245, 255, 0.3);
+        }
+
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: linear-gradient(145deg, rgba(15, 15, 35, 0.8) 0%, rgba(25, 25, 45, 0.8) 100%);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 2px;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff, #00ff88);
+            border-radius: 20px;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: subtract;
+        }
+
+        .project-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(0, 245, 255, 0.2);
+        }
+
+        .contact-section {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.05) 0%, rgba(255, 0, 255, 0.05) 100%);
+            border-radius: 30px;
+            margin: 2rem;
+            padding: 4rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            margin: 2rem auto 0;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: rgba(0, 245, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .neural-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(0deg); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .cgpa-highlight {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00f5ff;
+            border-radius: 50%;
+            animation: particleFloat 10s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) translateX(0);
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-10vh) translateX(100px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .floating-card { position: static; margin: 2rem auto; transform: none; }
+            .section { padding: 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-cursor"></div>
+    <div id="canvas-container"></div>
+    <div class="particle-container"></div>
+    
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">SKANDH AGARWAL</h1>
+            <p class="hero-subtitle">AI/ML Developer • Innovator • Problem Solver</p>
+        </div>
+        
+        <div class="floating-card card-about">
+            <h3>🎓 Academic Excellence</h3>
+            <p><span class="cgpa-highlight">9.88 CGPA</span> in Computer Science with AI/ML specialization at SRM University</p>
+        </div>
+        
+        <div class="floating-card card-skills">
+            <h3>💻 Tech Arsenal</h3>
+            <p>C • C++ • Python • React • JavaScript • HTML/CSS</p>
+        </div>
+        
+        <div class="floating-card card-projects">
+            <h3>🚀 Innovation</h3>
+            <p>Building AI solutions and contributing to NSS society leadership</p>
+        </div>
+        
+        <div class="scroll-indicator">
+            <div style="color: #00f5ff; font-size: 2rem;">↓</div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Skills & Technologies</h2>
+        <div class="skills-grid">
+            <div class="skill-card">
+                <h3>🧠 AI/ML</h3>
+                <p>Machine Learning algorithms, Neural Networks, Data Science</p>
+            </div>
+            <div class="skill-card">
+                <h3>💻 Programming</h3>
+                <p>C, C++, Python with strong algorithmic thinking</p>
+            </div>
+            <div class="skill-card">
+                <h3>🌐 Web Development</h3>
+                <p>React, JavaScript, HTML5, CSS3, Responsive Design</p>
+            </div>
+            <div class="skill-card">
+                <h3>👥 Leadership</h3>
+                <p>NSS Society member, Team collaboration, Project management</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="projects-container">
+            <div class="project-card">
+                <h3>🤖 AI Club Match-maker</h3>
+                <p>An intelligent matchmaking system that connects students with similar interests and skills using AI algorithms. Features advanced matching logic and user-friendly interface.</p>
+                <div style="margin-top: 1rem;">
+                    <a href="https://github.com/Skandh01/AI-Club-Matchmaking" target="_blank" style="color: #00f5ff; text-decoration: none;">View on GitHub →</a>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <h3>🔐 Secure Login System</h3>
+                <p>A robust authentication system with modern security practices. Implements secure login/logout functionality with clean, intuitive design.</p>
+                <div style="margin-top: 1rem;">
+                    <a href="https://github.com/Skandh01/AI-Club-Matchmaking" target="_blank" style="color: #00f5ff; text-decoration: none;">View on GitHub →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section contact-section">
+        <h2 class="section-title">Let's Connect</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">Ready to innovate together? Let's build the future!</p>
+        
+        <div class="contact-grid">
+            <div class="contact-item">
+                <h3>📧 Email</h3>
+                <p>agarwalskandh@gmail.com</p>
+            </div>
+            <div class="contact-item">
+                <h3>📱 Phone</h3>
+                <p>+91 8650338538</p>
+            </div>
+            <div class="contact-item">
+                <h3>💼 LinkedIn</h3>
+                <p><a href="https://linkedin.com/in/skandh-agarwal" target="_blank" style="color: #00f5ff; text-decoration: none;">Connect with me</a></p>
+            </div>
+            <div class="contact-item">
+                <h3>🔗 GitHub</h3>
+                <p><a href="https://github.com/Skandh01" target="_blank" style="color: #00f5ff; text-decoration: none;">@Skandh01</a></p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Three.js 3D Background
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create 3D particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0x00f5ff,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Create rotating geometric shapes
+        const geometries = [
+            new THREE.OctahedronGeometry(0.5),
+            new THREE.TetrahedronGeometry(0.5),
+            new THREE.IcosahedronGeometry(0.5)
+        ];
+
+        const materials = [
+            new THREE.MeshBasicMaterial({ color: 0x00f5ff, wireframe: true }),
+            new THREE.MeshBasicMaterial({ color: 0xff00ff, wireframe: true }),
+            new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true })
+        ];
+
+        const meshes = [];
+        for (let i = 0; i < 15; i++) {
+            const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+            const material = materials[Math.floor(Math.random() * materials.length)];
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            mesh.position.x = (Math.random() - 0.5) * 20;
+            mesh.position.y = (Math.random() - 0.5) * 20;
+            mesh.position.z = (Math.random() - 0.5) * 20;
+            
+            scene.add(mesh);
+            meshes.push(mesh);
+        }
+
+        camera.position.z = 5;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate particles
+            particlesMesh.rotation.x += 0.001;
+            particlesMesh.rotation.y += 0.002;
+
+            // Rotate geometric shapes
+            meshes.forEach((mesh, index) => {
+                mesh.rotation.x += 0.01;
+                mesh.rotation.y += 0.01;
+                mesh.position.x += Math.sin(Date.now() * 0.001 + index) * 0.01;
+                mesh.position.y += Math.cos(Date.now() * 0.001 + index) * 0.01;
+            });
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Create floating particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            document.querySelector('.particle-container').appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 20000);
+        }
+
+        // Create particles periodically
+        setInterval(createParticle, 500);
+
+        // Smooth scrolling for better UX
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            window.scrollBy({
+                top: e.deltaY * 0.8,
+                behavior: 'smooth'
+            });
+        });
+
+        // Interactive elements
+        document.querySelectorAll('.skill-card, .project-card, .contact-item').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(2)';
+            });
+            card.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+            });
+        });
+
+        // Mouse movement parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            camera.position.x = (mouseX - 0.5) * 2;
+            camera.position.y = (mouseY - 0.5) * -2;
+        });
+
+        // Scroll-triggered animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.skill-card, .project-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
